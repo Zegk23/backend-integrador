@@ -21,6 +21,6 @@ public class ProductoController {
     public List<Producto> listarProductos() {
         return productoRepositorio.findAll();
     }
-   
-   
+    
+    
 }
