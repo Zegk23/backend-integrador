@@ -10,7 +10,6 @@
 <div class="container mt-4">
     <h1 th:text="${producto.id != null} ? 'Editar Producto' : 'Nuevo Producto'"></h1>
 
-    <!-- Corregimos el th:action para el formulario, utilizando '|' para evitar problemas en las URLs -->
     <form th:action="@{${producto.id != null} ? '/productos/actualizar/' + ${producto.id} : '/productos/guardar'}"
           th:object="${producto}" method="post">
           
@@ -32,7 +31,6 @@
         <div class="mb-3">
             <label for="categoria" class="form-label">Categoría:</label>
             <select th:field="*{categoria}" class="form-select" id="categoria" required>
-                <!-- Corregimos th:value para que apunte a la ID de la categoría -->
                 <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"></option>
             </select>
         </div>
@@ -40,15 +38,12 @@
         <div class="mb-3">
             <label for="proveedor" class="form-label">Proveedor:</label>
             <select th:field="*{proveedor}" class="form-select" id="proveedor" required>
-                <!-- Corregimos th:value para que apunte a la ID del proveedor -->
                 <option th:each="proveedor : ${proveedores}" th:value="${proveedor.id}" th:text="${proveedor.nombre}"></option>
             </select>
         </div>
 
         <div class="mb-3">
-            <!-- Botón para guardar o actualizar el producto -->
             <button type="submit" class="btn btn-primary" th:text="${producto.id != null} ? 'Actualizar' : 'Guardar'"></button>
-            <!-- Botón para cancelar y volver a la lista de productos -->
             <a th:href="@{/productos/listar}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>

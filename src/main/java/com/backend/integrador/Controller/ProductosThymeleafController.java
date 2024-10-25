@@ -48,8 +48,8 @@ public class ProductosThymeleafController {
         List<Proveedor> proveedores = proveedorRepositorio.findAll();
 
         model.addAttribute("producto", producto);
-        model.addAttribute("categorias", categorias); // Se envían las categorías al formulario
-        model.addAttribute("proveedores", proveedores); // Se envían los proveedores al formulario
+        model.addAttribute("categorias", categorias); 
+        model.addAttribute("proveedores", proveedores); 
         return "productoForm";
     }
 
@@ -71,8 +71,8 @@ public class ProductosThymeleafController {
             List<Proveedor> proveedores = proveedorRepositorio.findAll();
 
             model.addAttribute("producto", producto.get());
-            model.addAttribute("categorias", categorias); // Se envían las categorías al formulario
-            model.addAttribute("proveedores", proveedores); // Se envían los proveedores al formulario
+            model.addAttribute("categorias", categorias); 
+            model.addAttribute("proveedores", proveedores);
             return "productoForm";
         } else {
             return "redirect:/productos/listar";
