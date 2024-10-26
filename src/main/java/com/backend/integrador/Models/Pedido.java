@@ -15,14 +15,11 @@ public class Pedido {
     @Column(name = "fecha", nullable = false)
     private String fecha;  
 
-    @Column(name = "total", nullable = false)
-    private double total;
-
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)  // Relación con Usuario
+    @JoinColumn(name = "usuario_id", nullable = false)  
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "direccion_id", nullable = false)  // Relación con Direccion
+    @JoinColumn(name = "direccion_id", nullable = false)  
     private Direccion direccion;
 }

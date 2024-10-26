@@ -16,7 +16,7 @@ public class Producto {
     private String nombre;
 
     @Column(name = "image_url")
-    private String imageUrl;  // Cambié de image_url a imageUrl para seguir la convención camelCase
+    private String imageUrl;  // Convención camelCase
 
     @Column(name = "precio", nullable = false)
     private double precio;
@@ -27,10 +27,6 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
-
-    @ManyToOne
-    @JoinColumn(name = "proveedor_id", nullable = false)
-    private Proveedor proveedor;
 
     public Producto(Long id, String nombre, String imageUrl, double precio, int stock) {
         this.id = id;
