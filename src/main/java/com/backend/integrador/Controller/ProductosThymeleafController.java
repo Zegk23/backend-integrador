@@ -33,14 +33,12 @@ public class ProductosThymeleafController {
     @Autowired
     private ProveedorRepositorio proveedorRepositorio;
 
-    // Listar todos los productos
     @GetMapping("/listar")
     public String listarProductos(Model model) {
         model.addAttribute("productos", productoRepositorio.findAll());
         return "productosListar";
     }
 
-    // Mostrar el formulario para agregar un nuevo producto
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevoProducto(Model model) {
         Producto producto = new Producto();
@@ -53,7 +51,6 @@ public class ProductosThymeleafController {
         return "productoForm";
     }
 
-    // Guardar un nuevo producto
     @PostMapping("/guardar")
     public String guardarProducto(@ModelAttribute("producto") Producto producto,
             RedirectAttributes redirectAttributes) {
@@ -62,7 +59,6 @@ public class ProductosThymeleafController {
         return "redirect:/productos/listar";
     }
 
-    // Mostrar el formulario para editar un producto
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model) {
         Optional<Producto> producto = productoRepositorio.findById(id);
@@ -79,7 +75,6 @@ public class ProductosThymeleafController {
         }
     }
 
-    // Actualizar un producto existente
     @PostMapping("/actualizar/{id}")
     public String actualizarProducto(@PathVariable Long id, @ModelAttribute("producto") Producto producto,
             RedirectAttributes redirectAttributes) {
@@ -100,7 +95,6 @@ public class ProductosThymeleafController {
         return "redirect:/productos/listar";
     }
 
-    // Eliminar un producto
     @GetMapping("/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Optional<Producto> producto = productoRepositorio.findById(id);

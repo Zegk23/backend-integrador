@@ -1,5 +1,8 @@
 package com.backend.integrador.Models;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +29,10 @@ public class Contacto {
 
     @Column(name = "fecha_envio", nullable = false)
     private String fechaEnvio;  // Fecha como VARCHAR
+    
+    @PrePersist
+    protected void onCreate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.fechaEnvio = LocalDateTime.now().format(formatter);
+    }
 }
