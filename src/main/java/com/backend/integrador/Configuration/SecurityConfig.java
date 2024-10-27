@@ -16,13 +16,12 @@ public class SecurityConfig {
             .cors(cors -> cors.disable()) 
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(authorize -> authorize
-                // Permitir acceso sin autenticación a productos, categorías, contacto y registro de usuarios
                 .requestMatchers("/api/productos/**").permitAll()
                 .requestMatchers("/api/categorias/**").permitAll()
                 .requestMatchers("/api/contacto/**").permitAll()
-                .requestMatchers("/api/usuarios/registrar").permitAll() // Permitir registrar usuarios sin autenticación
-                .requestMatchers("/api/auth/**").permitAll() // Permitir autenticación (login)
-                .anyRequest().authenticated() // Proteger cualquier otra ruta
+                .requestMatchers("/api/usuarios/registrar").permitAll() 
+                .requestMatchers("/api/auth/**").permitAll() 
+                .anyRequest().authenticated() 
             );
         return http.build();
     }
