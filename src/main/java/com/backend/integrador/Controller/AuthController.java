@@ -1,5 +1,6 @@
 package com.backend.integrador.Controller;
 
+import com.backend.integrador.DTO.Login;
 import com.backend.integrador.Models.Usuario;
 import com.backend.integrador.Service.UsuarioService;
 import com.backend.integrador.Util.JWTUtil;
@@ -35,8 +36,8 @@ public class AuthController {
 
     // Endpoint para iniciar sesión y devolver un token JWT
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Usuario usuario) {
-        Optional<Usuario> user = usuarioService.verificarUsuario(usuario.getCorreo(), usuario.getPassword());
+    public ResponseEntity<String> login(@RequestBody Login login) {
+        Optional<Usuario> user = usuarioService.verificarUsuario(login.getCorreo(), login.getPassword());
         if (user.isPresent()) {
             String token = jwtUtil.generarToken(user.get().getCorreo());
             return ResponseEntity.ok(token);
