@@ -16,7 +16,7 @@ public class Producto {
     private String nombre;
 
     @Column(name = "image_url")
-    private String imageUrl;  // Convención camelCase
+    private String imageUrl;  
 
     @Column(name = "precio", nullable = false)
     private double precio;

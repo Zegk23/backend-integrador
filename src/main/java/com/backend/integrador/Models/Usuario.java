@@ -29,12 +29,12 @@ public class Usuario {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = "rol_id", nullable = false)  // Relación ManyToOne con Rol
+    @JoinColumn(name = "rol_id", nullable = false)  
     private Rol rol;
 
-    @OneToMany(mappedBy = "usuario")  // Un Usuario tiene muchas Direcciones
+    @OneToMany(mappedBy = "usuario")  
     private List<Direccion> direcciones;
 
-    @OneToMany(mappedBy = "usuario")  // Un Usuario puede tener muchos Pedidos
+    @OneToMany(mappedBy = "usuario")
     private List<Pedido> pedidos;
 }

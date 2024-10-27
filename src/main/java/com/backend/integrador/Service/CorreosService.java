@@ -27,13 +27,11 @@ public class CorreosService {
         helper.setSubject(subject);
         helper.setFrom("velazcopanaderiaydulceria@gmail.com");
 
-        // Configuración de Thymeleaf
         Context context = new Context();
-        context.setVariable("nombre", nombre); // Variable que se pasa a la plantilla
+        context.setVariable("nombre", nombre); 
 
-        // Renderización de la plantilla
         String htmlContent = templateEngine.process(templateName, context);
-        helper.setText(htmlContent, true); // Habilita HTML
+        helper.setText(htmlContent, true); 
 
         mailSender.send(message);
     }

@@ -5,8 +5,8 @@ import com.backend.integrador.Exceptions.CorreoElectronicoYaExiste;
 import com.backend.integrador.Models.Rol;
 import com.backend.integrador.Repository.UsuarioRepositorio;
 import com.backend.integrador.Repository.RolRepositorio;
-import com.google.common.base.Preconditions;
-import com.google.common.hash.Hashing;
+import com.google.common.base.Preconditions; // Validaciones con Google Guava
+import com.google.common.hash.Hashing; // Google Guava Hashing
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +26,11 @@ public class UsuarioService {
 
     @Autowired
     private CorreosService correosService; 
+
+    public Optional<Usuario> obtenerUsuarioPorCorreo(String correo) {
+        return usuarioRepositorio.findByCorreo(correo);
+    }
+    
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
@@ -50,11 +55,10 @@ public class UsuarioService {
 
         Usuario savedUser = usuarioRepositorio.save(usuario);
 
-        // Enviar correo de bienvenida usando plantilla
         correosService.sendEmail(
                 usuario.getCorreo(),
                 "Bienvenido a Velazco Panadería y Dulcería",
-                "emailTemplate", // Nombre de la plantilla Thymeleaf
+                "emailTemplate", 
                 usuario.getNombre()
         );
 
@@ -67,7 +71,7 @@ public class UsuarioService {
             correosService.sendEmail(
                     correo,
                     "Inicio de sesión exitoso",
-                    "emailTemplate", // Nombre de la plantilla Thymeleaf para el mensaje de inicio de sesión
+                    "emailTemplate", 
                     usuario.get().getNombre()
             );
             return usuario;
@@ -87,4 +91,14 @@ public class UsuarioService {
         Preconditions.checkArgument(usuario.getPassword().length() >= 8,
                 "La contraseña debe tener al menos 8 caracteres");
     }
+    
+    public void actualizarUsuario(Usuario usuario) {
+        usuarioRepositorio.save(usuario); 
+    }
+    
+    public void actualizarContrasena(Usuario usuario, String nuevaContrasena) {
+        usuario.setPassword(hashPassword(nuevaContrasena));
+        usuarioRepositorio.save(usuario);
+    }
+    
 }
