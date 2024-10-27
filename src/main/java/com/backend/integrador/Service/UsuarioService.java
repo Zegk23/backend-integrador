@@ -10,6 +10,7 @@ import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.MessagingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -24,7 +25,7 @@ public class UsuarioService {
     private RolRepositorio rolRepositorio;
 
     @Autowired
-    private CorreosService correosService; // Inyectamos el servicio de correos
+    private CorreosService correosService; 
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
@@ -34,8 +35,8 @@ public class UsuarioService {
                 .toString();
     }
 
-    public Usuario registrarUsuario(Usuario usuario) {
-        validateUser(usuario); // Validación de usuario antes de proceder
+    public Usuario registrarUsuario(Usuario usuario) throws MessagingException {
+        validateUser(usuario); 
 
         if (usuarioRepositorio.findByCorreo(usuario.getCorreo()).isPresent()) {
             throw new CorreoElectronicoYaExiste("El correo electrónico ya está registrado");
@@ -49,24 +50,25 @@ public class UsuarioService {
 
         Usuario savedUser = usuarioRepositorio.save(usuario);
 
-        // Enviar correo de bienvenida
+        // Enviar correo de bienvenida usando plantilla
         correosService.sendEmail(
                 usuario.getCorreo(),
                 "Bienvenido a Velazco Panadería y Dulcería",
-                "Hola " + usuario.getNombre() + ", gracias por registrarte en nuestra plataforma."
+                "emailTemplate", // Nombre de la plantilla Thymeleaf
+                usuario.getNombre()
         );
 
         return savedUser;
     }
 
-    public Optional<Usuario> verificarUsuario(String correo, String password) {
+    public Optional<Usuario> verificarUsuario(String correo, String password) throws MessagingException {
         Optional<Usuario> usuario = usuarioRepositorio.findByCorreo(correo);
         if (usuario.isPresent() && usuario.get().getPassword().equals(hashPassword(password))) {
-            // Enviar correo de notificación de inicio de sesión
             correosService.sendEmail(
                     correo,
                     "Inicio de sesión exitoso",
-                    "Hola " + usuario.get().getNombre() + ", has iniciado sesión en nuestra plataforma."
+                    "emailTemplate", // Nombre de la plantilla Thymeleaf para el mensaje de inicio de sesión
+                    usuario.get().getNombre()
             );
             return usuario;
         }
@@ -74,17 +76,14 @@ public class UsuarioService {
     }
 
     private void validateUser(Usuario usuario) {
-        // Validación del nombre y apellido (no vacío y longitud mínima de 2 caracteres)
         Preconditions.checkArgument(usuario.getNombre() != null && usuario.getNombre().length() >= 2,
                 "El nombre debe tener al menos 2 caracteres");
         Preconditions.checkArgument(usuario.getApellido() != null && usuario.getApellido().length() >= 2,
                 "El apellido debe tener al menos 2 caracteres");
 
-        // Validación del correo electrónico
         Preconditions.checkArgument(EMAIL_PATTERN.matcher(usuario.getCorreo()).matches(),
                 "El correo electrónico no tiene un formato válido");
 
-        // Validación de la contraseña (longitud mínima de 8 caracteres)
         Preconditions.checkArgument(usuario.getPassword().length() >= 8,
                 "La contraseña debe tener al menos 8 caracteres");
     }

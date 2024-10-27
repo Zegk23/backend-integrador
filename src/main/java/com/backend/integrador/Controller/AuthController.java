@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.mail.MessagingException;
 import java.util.Optional;
 
 @RestController
@@ -21,7 +22,6 @@ public class AuthController {
     @Autowired
     private JWTUtil jwtUtil;
 
-    // Endpoint para registrar un nuevo usuario
     @PostMapping("/register")
     public ResponseEntity<String> registrar(@RequestBody Usuario usuario) {
         System.out.println("Datos recibidos: " + usuario.toString());
@@ -30,18 +30,26 @@ public class AuthController {
             return ResponseEntity.badRequest().body("El nombre es obligatorio");
         }
 
-        usuarioService.registrarUsuario(usuario);
+        try {
+            usuarioService.registrarUsuario(usuario);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(500).body("Error al enviar el correo de bienvenida.");
+        }
+
         return ResponseEntity.ok("Usuario registrado exitosamente");
     }
 
-    // Endpoint para iniciar sesión y devolver un token JWT
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Login login) {
-        Optional<Usuario> user = usuarioService.verificarUsuario(login.getCorreo(), login.getPassword());
-        if (user.isPresent()) {
-            String token = jwtUtil.generarToken(user.get().getCorreo());
-            return ResponseEntity.ok(token);
+        try {
+            Optional<Usuario> user = usuarioService.verificarUsuario(login.getCorreo(), login.getPassword());
+            if (user.isPresent()) {
+                String token = jwtUtil.generarToken(user.get().getCorreo());
+                return ResponseEntity.ok(token);
+            }
+            return ResponseEntity.badRequest().body("Correo o contraseña incorrectos");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(500).body("Error al enviar el correo de inicio de sesión.");
         }
-        return ResponseEntity.badRequest().body("Correo o contraseña incorrectos");
     }
 }
