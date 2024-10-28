@@ -20,7 +20,7 @@ public class Pago {
     private double monto;
 
     @Column(name = "fecha", nullable = false)
-    private String fecha;  // Fecha como VARCHAR
+    private String fecha;  
 
     @ManyToOne
     @JoinColumn(name = "metodo_pago_id", nullable = false)

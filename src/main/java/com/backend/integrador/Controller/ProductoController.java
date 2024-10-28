@@ -15,12 +15,15 @@ import java.util.List;
 public class ProductoController {
 
     @Autowired
-    ProductoRepositorio productoRepositorio;
+    private ProductoRepositorio productoRepositorio;
 
     @GetMapping("/listarProductos")
     public List<Producto> listarProductos() {
         return productoRepositorio.findAll();
     }
-    
-    
+
+    @GetMapping("/masVendidos")
+    public List<Producto> obtenerTop4ProductosMasVendidos() {
+        return productoRepositorio.findTop4ProductosMasVendidos();
+    }
 }

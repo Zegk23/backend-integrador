@@ -95,13 +95,22 @@
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId> <!-- Para manejar JSON en los tokens -->
+			<artifactId>jjwt-jackson</artifactId> 
 			<version>0.11.2</version>
 			<scope>runtime</scope>
 		</dependency>
-		
-		
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>27.1.1</version>
+		</dependency>
 
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>java-dotenv</artifactId>
+			<version>5.2.2</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

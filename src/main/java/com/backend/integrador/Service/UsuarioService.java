@@ -41,7 +41,7 @@ public class UsuarioService {
     }
 
     public Usuario registrarUsuario(Usuario usuario) throws MessagingException {
-        validateUser(usuario); 
+        validarUsuario(usuario); 
 
         if (usuarioRepositorio.findByCorreo(usuario.getCorreo()).isPresent()) {
             throw new CorreoElectronicoYaExiste("El correo electrónico ya está registrado");
@@ -79,7 +79,7 @@ public class UsuarioService {
         return Optional.empty(); 
     }
 
-    private void validateUser(Usuario usuario) {
+    private void validarUsuario(Usuario usuario) {
         Preconditions.checkArgument(usuario.getNombre() != null && usuario.getNombre().length() >= 2,
                 "El nombre debe tener al menos 2 caracteres");
         Preconditions.checkArgument(usuario.getApellido() != null && usuario.getApellido().length() >= 2,

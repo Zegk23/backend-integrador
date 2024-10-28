@@ -20,7 +20,7 @@ public class ConfirmacionPedido {
     private String correoUsuario;
 
     @Column(name = "fecha_envio", nullable = false)
-    private String fechaEnvio;  // Fecha como VARCHAR
+    private String fechaEnvio;  
 
     @Column(name = "estado", nullable = false)
     private String estado;
