@@ -65,6 +65,7 @@ public class UsuarioService {
         return savedUser;
     }
 
+    //Login
     public Optional<Usuario> verificarUsuario(String correo, String password) throws MessagingException {
         Optional<Usuario> usuario = usuarioRepositorio.findByCorreo(correo);
         if (usuario.isPresent() && usuario.get().getPassword().equals(hashPassword(password))) {

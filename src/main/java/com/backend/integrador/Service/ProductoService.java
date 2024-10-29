@@ -11,11 +11,7 @@ import java.util.Optional;
 @Service
 public class ProductoService {
     @Autowired
-    private final ProductoRepositorio productoRepositorio;
-
-    public ProductoService(ProductoRepositorio productoRepositorio) {
-        this.productoRepositorio = productoRepositorio;
-    }
+    private ProductoRepositorio productoRepositorio;
 
     public List<Producto> obtenerTop4ProductosMasVendidos() {
         return productoRepositorio.findTop4ProductosMasVendidos();
