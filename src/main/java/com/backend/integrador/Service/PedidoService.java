@@ -69,37 +69,38 @@ public class PedidoService {
      * Método para crear un pedido y asociar los productos
      */
     public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos) {
-        // Verificar si el usuario existe
         Usuario usuario = usuarioRepositorio.findById(pedido.getUsuario().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
+    
         pedido.setUsuario(usuario);
-
-        // Guardar la dirección si no existe
+    
         Direccion direccion = pedido.getDireccion();
         if (direccion != null && direccion.getId() == null) {
             direccion.setUsuario(usuario);
             direccion = direaccionRepositorio.save(direccion);
             pedido.setDireccion(direccion);
         }
-
-        // Asignar productos al pedido
-        for (PedidoProducto pedidoProducto : new ArrayList<>(productos)) { // Crea una copia de la lista para iterar
+    
+        // Crea una copia de la lista para iterar
+        List<PedidoProducto> copiaProductos = new ArrayList<>(productos);
+    
+        for (PedidoProducto pedidoProducto : copiaProductos) {
             Producto producto = productoRepositorio.findById(pedidoProducto.getProducto().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
-
+                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + pedidoProducto.getProducto().getId()));
+    
             if (producto.getStock() < pedidoProducto.getCantidad()) {
                 throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getNombre());
             }
-
+    
+            pedidoProducto.setProducto(producto);
             pedidoProducto.setSubtotal(producto.getPrecio() * pedidoProducto.getCantidad());
             producto.setStock(producto.getStock() - pedidoProducto.getCantidad());
-            pedido.agregarPedidoProducto(pedidoProducto); // Modifica la lista original
+            pedido.agregarPedidoProducto(pedidoProducto); // Agrega al pedido sin modificar directamente la lista iterada
             productoRepositorio.save(producto);
         }
-
-        // Guardar el pedido completo junto con los productos
+    
         return pedidoRepositorio.save(pedido);
     }
+    
 
 }
