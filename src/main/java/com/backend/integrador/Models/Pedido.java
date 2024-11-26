@@ -42,4 +42,10 @@ public class Pedido {
         pedidoProductos.add(pedidoProducto); // Esto ya no lanzará NullPointerException
         pedidoProducto.setPedido(this);
     }
+
+    public double calcularTotal() {
+        return this.getPedidoProductos().stream()
+                .mapToDouble(pp -> pp.getProducto().getPrecio() * pp.getCantidad())
+                .sum();
+    }
 }

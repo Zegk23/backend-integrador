@@ -3,6 +3,8 @@ package com.backend.integrador.Controller;
 import com.backend.integrador.Models.Pedido;
 import com.backend.integrador.Service.PedidoService;
 import com.backend.integrador.Service.StripeService;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
 
 import java.util.Map;
 
@@ -20,9 +22,31 @@ public class PedidoController {
     @Autowired
     private StripeService stripeService;
 
-    /**
-     * Endpoint para crear un pedido y generar una sesión de pago con Stripe
-     */
+    @PostMapping("/crear-payment-intent")
+    public ResponseEntity<?> crearPaymentIntent(@RequestBody Pedido pedido) {
+        try {
+            // Crear el pedido en la base de datos (si corresponde)
+            Pedido nuevoPedido = pedidoService.crearPedido(pedido, pedido.getPedidoProductos());
+
+            // Configurar los parámetros del PaymentIntent
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount((long) (nuevoPedido.calcularTotal() * 100)) // Total en centavos
+                    .setCurrency("pen") // Moneda
+                    .setDescription("Compra en Mi Tienda")
+                    .build();
+
+            // Crear el PaymentIntent en Stripe
+            PaymentIntent paymentIntent = stripeService.crearPaymentIntent(params);
+
+            // Retornar el clientSecret al frontend
+            return ResponseEntity.ok(Map.of("clientSecret", paymentIntent.getClientSecret()));
+        } catch (Exception e) {
+            // Manejar errores y devolver un mensaje
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error al crear el Payment Intent: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/crear-pedido")
     public ResponseEntity<?> crearPedidoConStripe(@RequestBody Pedido pedido) {
         try {
