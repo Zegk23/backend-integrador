@@ -6,6 +6,9 @@ import com.stripe.Stripe;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import io.github.cdimascio.dotenv.Dotenv;
+import com.backend.integrador.Repository.PedidoRepositorio;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,6 +16,9 @@ import java.util.List;
 
 @Service
 public class StripeService {
+
+    @Autowired
+    PedidoRepositorio pedidoRepositorio;
 
     private final String stripeSecretKey;
 
@@ -28,22 +34,10 @@ public class StripeService {
     public String crearSesionDeStripe(Pedido pedido) throws Exception {
         // Configurar Stripe con la clave secreta
         Stripe.apiKey = stripeSecretKey;
-
+    
         // Crear los line items basados en los productos del pedido
         List<SessionCreateParams.LineItem> lineItems = new ArrayList<>();
         for (PedidoProducto pp : pedido.getPedidoProductos()) {
-            // Validar que los datos del producto estén completos
-            if (pp.getProducto() == null || pp.getProducto().getNombre() == null || pp.getProducto().getPrecio() == 0) {
-                throw new IllegalArgumentException("El producto en PedidoProducto no tiene información válida.");
-            }
-
-            // Logs para verificar los datos del producto
-            System.out.println("Preparando LineItem:");
-            System.out.println("Nombre del producto: " + pp.getProducto().getNombre());
-            System.out.println("Precio del producto (en centavos): " + (long) (pp.getProducto().getPrecio() * 100));
-            System.out.println("Cantidad: " + pp.getCantidad());
-
-            // Crear el LineItem para Stripe
             lineItems.add(
                 SessionCreateParams.LineItem.builder()
                     .setPriceData(
@@ -58,10 +52,7 @@ public class StripeService {
                     .setQuantity((long) pp.getCantidad()) // Cantidad del producto
                     .build());
         }
-
-        // Log de los LineItems preparados
-        System.out.println("Total LineItems preparados: " + lineItems.size());
-
+    
         // Crear la sesión de Stripe
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD) // Método de pago: Tarjeta
@@ -70,11 +61,14 @@ public class StripeService {
                 .setSuccessUrl("http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}") // URL de éxito
                 .setCancelUrl("http://localhost:3000/cancel") // URL de cancelación
                 .build();
-
-        // Crear la sesión en Stripe y devolver el sessionId
+    
         Session session = Session.create(params);
-        System.out.println("Stripe Session creada con ID: " + session.getId());
-
-        return session.getId(); // Devolver el sessionId
+    
+        // Guardar el sessionId en el pedido
+        pedido.setStripeSessionId(session.getId());
+        pedidoRepositorio.save(pedido); // Actualiza el pedido con el sessionId
+    
+        return session.getId(); // Retorna el sessionId
     }
+    
 }
