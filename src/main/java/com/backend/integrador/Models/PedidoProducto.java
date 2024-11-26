@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Table(name = "pedido_producto")
 public class PedidoProducto {
     @Id
@@ -20,7 +21,9 @@ public class PedidoProducto {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
+    @Column(name = "cantidad", nullable = false)
     private int cantidad;
 
+    @Column(name = "subtotal")
     private double subtotal;
 }

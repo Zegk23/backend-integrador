@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.backend.integrador.Models.Producto;
 
 public interface ProductoRepositorio extends JpaRepository<Producto, Long>{
+    
     @Query(value = "SELECT p.* FROM producto p " +
                    "JOIN ventas_producto v ON p.id = v.producto_id " +
                    "GROUP BY p.id " +

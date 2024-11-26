@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Table(name = "pago")
 public class Pago {
     @Id
@@ -20,7 +21,16 @@ public class Pago {
     private double monto;
 
     @Column(name = "fecha", nullable = false)
-    private String fecha;  
+    private String fecha;
+
+    @Column(name = "stripe_payment_id")
+    private String stripePaymentId;
+
+    @Column(name = "stripe_session_id")
+    private String stripeSessionId;
+
+    @Column(name = "estado", nullable = false)
+    private String estado = "Pendiente";
 
     @ManyToOne
     @JoinColumn(name = "metodo_pago_id", nullable = false)

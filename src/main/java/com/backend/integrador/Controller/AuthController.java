@@ -82,7 +82,7 @@ public class AuthController {
                 usuario.setTelefono(updatedUser.getTelefono());
 
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    usuarioService.actualizarContrasena(usuario, updatedUser.getPassword()); 
+                    usuarioService.actualizarContrasena(usuario, updatedUser.getPassword());
                 }
 
                 usuarioService.actualizarUsuario(usuario);

@@ -5,6 +5,8 @@ import com.backend.integrador.Models.Usuario;
 
 import java.util.Optional;
 
+
 public interface UsuarioRepositorio extends JpaRepository<Usuario,Long> {
     Optional<Usuario> findByCorreo(String correo);
+    Optional<Usuario> findById(Long id);
 }

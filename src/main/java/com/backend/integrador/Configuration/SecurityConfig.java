@@ -13,17 +13,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.disable()) 
-            .csrf(csrf -> csrf.disable()) 
+            .csrf(csrf -> csrf.disable()) // Desactivar CSRF (opcional durante desarrollo)
             .authorizeHttpRequests(authorize -> authorize
+                // Permitir acceso sin autenticación a ciertas rutas de la API
                 .requestMatchers("/api/productos/**").permitAll()
                 .requestMatchers("/api/categorias/**").permitAll()
                 .requestMatchers("/api/contacto/**").permitAll()
-                .requestMatchers("/api/usuarios/registrar").permitAll() 
-                .requestMatchers("/api/auth/**").permitAll() 
-                .anyRequest().authenticated() 
-            );
+                .requestMatchers("/api/usuarios/registrar").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                // Permitir todo el acceso a las rutas de pedidos
+                .requestMatchers("/api/pedidos/**").permitAll() // Permitir acceso completo a /api/pedidos/**
+                // Requiere autenticación para todas las demás rutas
+                .anyRequest().authenticated());  // Requiere autenticación para las demás rutas
         return http.build();
     }
-   
+
 }
