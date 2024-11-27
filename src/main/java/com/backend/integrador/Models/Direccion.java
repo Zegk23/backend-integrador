@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Table(name = "direccion")
 public class Direccion {
     @Id
@@ -25,6 +26,12 @@ public class Direccion {
     private String pais;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)  // Relación ManyToOne con Usuario
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    @Column(name = "referencia")
+    private String referencia; // Nuevo campo
+
+    @Column(name = "telefono_contacto")
+    private String telefonoContacto; // Nuevo campo
 }

@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -30,16 +29,11 @@ public class Pedido {
     @Column(name = "estado", nullable = false)
     private String estado = "Pendiente";
 
-    @Column(name = "stripe_session_id", unique = true)
-    private String stripeSessionId;
-
-    // Inicialización de la lista pedidoProductos
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PedidoProducto> pedidoProductos = new ArrayList<>(); // Se inicializa aquí
+    private List<PedidoProducto> pedidoProductos = new ArrayList<>();
 
-    // Método para sincronizar la relación bidireccional
     public void agregarPedidoProducto(PedidoProducto pedidoProducto) {
-        pedidoProductos.add(pedidoProducto); // Esto ya no lanzará NullPointerException
+        pedidoProductos.add(pedidoProducto);
         pedidoProducto.setPedido(this);
     }
 

@@ -13,44 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/stripe")
 public class StripeWebhookController {
 
-    @Autowired
-    private PedidoRepositorio pedidoRepositorio;
-
-    // Secret del webhook obtenido de Stripe
-    private static final String ENDPOINT_SECRET = System.getenv("STRIPE_WEBHOOK_SECRET");
-
     @PostMapping("/webhook")
     public ResponseEntity<?> handleStripeWebhook(@RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) {
+                                                 @RequestHeader("Stripe-Signature") String sigHeader) {
         try {
-            // Cargar el secreto desde las variables de entorno
-            String endpointSecret = System.getenv("STRIPE_WEBHOOK_SECRET");
-            if (endpointSecret == null) {
-                throw new IllegalStateException("Secreto del webhook no configurado");
-            }
-
-            // Validar la autenticidad del evento
-            Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-
-            // Manejar el evento específico
-            if ("checkout.session.completed".equals(event.getType())) {
-                Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
-
-                if (session != null) {
-                    // Busca el pedido relacionado al sessionId
-                    Pedido pedido = pedidoRepositorio.findByStripeSessionId(session.getId());
-                    if (pedido != null) {
-                        // Actualiza el estado del pedido a "Pagado"
-                        pedido.setEstado("Pagado");
-                        pedidoRepositorio.save(pedido);
-                    }
-                }
-            }
-
+            // Manejo general de eventos de Stripe, si corresponde
             return ResponseEntity.ok("Evento procesado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Error al procesar el webhook: " + e.getMessage());
         }
     }
-
 }
+
+    
+
