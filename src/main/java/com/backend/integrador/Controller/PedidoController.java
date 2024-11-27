@@ -37,8 +37,10 @@ public class PedidoController {
             Pedido pedido = pedidoRequest.getPedido();
             List<PedidoProducto> productos = pedidoRequest.getProductos();
             RecojoTienda recojoTienda = pedidoRequest.getRecojoTienda();
+            String stripePaymentId = "stripe_payment_id_mock"; // Cambia esto por el real
+            String metodoPagoNombre = "Tarjeta de crédito"; // Ajusta según el caso
 
-            Pedido nuevoPedido = pedidoService.crearPedido(pedido, productos, recojoTienda);
+            Pedido nuevoPedido = pedidoService.crearPedido(pedido, productos, recojoTienda, stripePaymentId, metodoPagoNombre);
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setAmount((long) (nuevoPedido.calcularTotal() * 100)) // Total en centavos
@@ -64,8 +66,10 @@ public class PedidoController {
             Pedido pedido = pedidoRequest.getPedido();
             List<PedidoProducto> productos = pedidoRequest.getProductos();
             RecojoTienda recojoTienda = pedidoRequest.getRecojoTienda();
+            String stripePaymentId = "stripe_payment_id_mock"; // Cambia esto por el real
+            String metodoPagoNombre = "Tarjeta de crédito"; // Ajusta según el caso
 
-            Pedido nuevoPedido = pedidoService.crearPedido(pedido, productos, recojoTienda);
+            Pedido nuevoPedido = pedidoService.crearPedido(pedido, productos, recojoTienda, stripePaymentId, metodoPagoNombre);
             return ResponseEntity.ok(nuevoPedido);
         } catch (Exception e) {
             log.error("Error al crear el pedido: ", e);

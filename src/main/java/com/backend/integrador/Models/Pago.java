@@ -26,13 +26,12 @@ public class Pago {
     @Column(name = "stripe_payment_id")
     private String stripePaymentId;
 
-    @Column(name = "stripe_session_id")
-    private String stripeSessionId;
-
     @Column(name = "estado", nullable = false)
     private String estado = "Pendiente";
 
     @ManyToOne
     @JoinColumn(name = "metodo_pago_id", nullable = false)
     private MetodoPago metodoPago;
+
+    
 }

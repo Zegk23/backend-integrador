@@ -32,7 +32,7 @@ public class PagoService {
      */
     public Pago registrarPago(Pedido pedido, double monto, String fecha, String stripePaymentId, String stripeSessionId, String metodoPagoNombre) {
         log.info("Iniciando registro de pago para el pedido ID: {}", pedido.getId());
-
+    
         // Buscar o crear el método de pago
         MetodoPago metodoPago = metodoPagoRepositorio.findByNombre(metodoPagoNombre)
                 .orElseGet(() -> {
@@ -40,23 +40,21 @@ public class PagoService {
                     MetodoPago nuevoMetodoPago = new MetodoPago();
                     nuevoMetodoPago.setNombre(metodoPagoNombre);
                     nuevoMetodoPago.setDescripcion("Pago realizado con " + metodoPagoNombre);
-                    nuevoMetodoPago.setProveedor("Stripe");
                     return metodoPagoRepositorio.save(nuevoMetodoPago);
                 });
-
+    
         // Crear y guardar el pago
         Pago pago = new Pago();
         pago.setPedido(pedido);
-        pago.setMonto(monto);
+        pago.setMonto(monto); // Asegúrate de que el monto sea el total correcto
         pago.setFecha(fecha);
         pago.setStripePaymentId(stripePaymentId);
-        pago.setStripeSessionId(stripeSessionId);
-        pago.setMetodoPago(metodoPago);
         pago.setEstado("Completado");
-
+        pago.setMetodoPago(metodoPago);
+    
         Pago pagoGuardado = pagoRepositorio.save(pago);
-        log.info("Pago registrado con éxito para el pedido ID: {}. ID del pago: {}", pedido.getId(), pagoGuardado.getId());
-
+        log.info("Pago registrado con éxito: {}", pagoGuardado);
         return pagoGuardado;
     }
+    
 }

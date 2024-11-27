@@ -3,6 +3,8 @@ package com.backend.integrador.Service;
 import com.backend.integrador.Exceptions.StockInsuficienteException;
 import com.backend.integrador.Models.*;
 import com.backend.integrador.Repository.*;
+
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,8 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
+@Slf4j
 public class PedidoService {
 
     @Autowired
@@ -32,80 +34,90 @@ public class PedidoService {
     @Autowired
     private RecojoTiendaRepositorio recojoTiendaRepositorio;
 
-    public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos, RecojoTienda recojoTienda) {
+    @Autowired
+    private PagoService pagoService;
+
+    @Transactional
+    public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos, RecojoTienda recojoTienda, String stripePaymentId, String metodoPagoNombre) {
         log.info("Iniciando creación del pedido...");
+
+        validarParametros(stripePaymentId, metodoPagoNombre);
 
         // Validar usuario
         Usuario usuario = usuarioRepositorio.findById(pedido.getUsuario().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-        log.info("Usuario validado: {}", usuario.getId());
         pedido.setUsuario(usuario);
 
         // Manejo de dirección o recojo en tienda
         if (pedido.getDireccion() == null && recojoTienda != null) {
-            log.info("Procesando pedido para recojo en tienda...");
-            Direccion direccionTienda = direccionRepositorio.findByDireccionIgnoreCase(recojoTienda.getLocal())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Dirección para el local '" + recojoTienda.getLocal() + "' no encontrada"));
-            log.info("Dirección de recojo encontrada: {}", direccionTienda.getDireccion());
-            pedido.setDireccion(direccionTienda);
-
-            // Guardar pedido antes de asociar detalles del recojo
-            Pedido pedidoGuardado = pedidoRepositorio.save(pedido);
-
-            // Guardar detalles del recojo
-            recojoTienda.setPedido(pedidoGuardado);
-            recojoTiendaRepositorio.save(recojoTienda);
-            log.info("Detalles del recojo guardados en la base de datos.");
-
-            return pedidoGuardado;
+            manejarRecojoEnTienda(pedido, recojoTienda);
         } else if (pedido.getDireccion() != null) {
-            log.info("Procesando pedido para delivery...");
-            Direccion direccionPedido = pedido.getDireccion();
-            Direccion direccion = direccionRepositorio.findByUsuarioAndDireccionAndCiudadAndCodigoPostalAndPais(
-                    usuario,
-                    direccionPedido.getDireccion(),
-                    direccionPedido.getCiudad(),
-                    direccionPedido.getCodigoPostal(),
-                    direccionPedido.getPais())
-                    .orElseGet(() -> {
-                        log.info("Nueva dirección detectada, guardando...");
-                        direccionPedido.setUsuario(usuario);
-                        return direccionRepositorio.save(direccionPedido);
-                    });
-
-            log.info("Dirección guardada con ID: {}", direccion.getId());
-            pedido.setDireccion(direccion);
+            manejarDelivery(pedido, usuario);
         }
 
         // Guardar pedido
         Pedido pedidoGuardado = pedidoRepositorio.save(pedido);
-        log.info("Pedido guardado con ID: {}", pedidoGuardado.getId());
 
         // Manejo de productos
-        log.info("Procesando productos del pedido...");
-        List<PedidoProducto> productosProcesados = new ArrayList<>();
+        manejarProductos(pedidoGuardado, productos);
+
+        // Registrar pago
+        registrarPago(pedidoGuardado, stripePaymentId, metodoPagoNombre);
+
+        log.info("Pedido creado exitosamente. ID: {}", pedidoGuardado.getId());
+        return pedidoGuardado;
+    }
+
+    private void validarParametros(String stripePaymentId, String metodoPagoNombre) {
+        if (stripePaymentId == null || stripePaymentId.isEmpty()) {
+            throw new IllegalArgumentException("El Stripe Payment ID no puede estar vacío.");
+        }
+        if (metodoPagoNombre == null || metodoPagoNombre.isEmpty()) {
+            throw new IllegalArgumentException("El nombre del método de pago no puede estar vacío.");
+        }
+    }
+
+    private void manejarRecojoEnTienda(Pedido pedido, RecojoTienda recojoTienda) {
+        Direccion direccionTienda = direccionRepositorio.findByDireccionIgnoreCase(recojoTienda.getLocal())
+                .orElseThrow(() -> new IllegalArgumentException("Dirección para el local no encontrada: " + recojoTienda.getLocal()));
+        pedido.setDireccion(direccionTienda);
+        Pedido pedidoGuardado = pedidoRepositorio.save(pedido);
+        recojoTienda.setPedido(pedidoGuardado);
+        recojoTiendaRepositorio.save(recojoTienda);
+    }
+
+    private void manejarDelivery(Pedido pedido, Usuario usuario) {
+        Direccion direccionPedido = direccionRepositorio.findByUsuarioAndDireccionAndCiudadAndCodigoPostalAndPais(
+                usuario,
+                pedido.getDireccion().getDireccion(),
+                pedido.getDireccion().getCiudad(),
+                pedido.getDireccion().getCodigoPostal(),
+                pedido.getDireccion().getPais())
+                .orElseGet(() -> {
+                    pedido.getDireccion().setUsuario(usuario);
+                    return direccionRepositorio.save(pedido.getDireccion());
+                });
+        pedido.setDireccion(direccionPedido);
+    }
+
+    private void manejarProductos(Pedido pedido, List<PedidoProducto> productos) {
         for (PedidoProducto pedidoProducto : productos) {
             Producto producto = productoRepositorio.findById(pedidoProducto.getProducto().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + pedidoProducto.getProducto().getId()));
-
             if (producto.getStock() < pedidoProducto.getCantidad()) {
                 throw new StockInsuficienteException("Stock insuficiente para el producto: " + producto.getNombre());
             }
-
-            pedidoProducto.setProducto(producto);
-            pedidoProducto.setPedido(pedidoGuardado);
-            pedidoProducto.setSubtotal(producto.getPrecio() * pedidoProducto.getCantidad());
             producto.setStock(producto.getStock() - pedidoProducto.getCantidad());
             productoRepositorio.save(producto);
 
-            productosProcesados.add(pedidoProducto);
-            log.info("Producto procesado: {} - Cantidad: {}", producto.getNombre(), pedidoProducto.getCantidad());
+            pedidoProducto.setProducto(producto);
+            pedidoProducto.setPedido(pedido);
         }
+        pedidoProductoRepositorio.saveAll(productos);
+    }
 
-        pedidoProductoRepositorio.saveAll(productosProcesados);
-
-        log.info("Pedido completado con éxito. ID del pedido: {}", pedidoGuardado.getId());
-        return pedidoGuardado;
+    private void registrarPago(Pedido pedido, String stripePaymentId, String metodoPagoNombre) {
+        log.info("Delegando registro de pago al PagoService...");
+        pagoService.registrarPago(pedido, pedido.calcularTotal(), pedido.getFecha(), stripePaymentId, null, metodoPagoNombre);
     }
 }
