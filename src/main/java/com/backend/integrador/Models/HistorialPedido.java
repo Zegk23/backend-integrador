@@ -1,7 +1,6 @@
 package com.backend.integrador.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,4 +32,9 @@ public class HistorialPedido {
 
     @Column(name = "subtotal", nullable = false)
     private double subtotal;
+
+    // Aquí se define el setter para productoId
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
+    }
 }

@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.backend.integrador.Models.Producto;
 
-public interface ProductoRepositorio extends JpaRepository<Producto, Long>{
-    
-    @Query(value = "SELECT p.* FROM producto p " +
-                   "JOIN ventas_producto v ON p.id = v.producto_id " +
+public interface ProductoRepositorio extends JpaRepository<Producto, Long> {
+
+    @Query(value = "SELECT p.* " +
+                   "FROM producto p " +
+                   "JOIN pedido_producto pp ON p.id = pp.producto_id " +
                    "GROUP BY p.id " +
-                   "ORDER BY SUM(v.cantidad) DESC " +
+                   "ORDER BY SUM(pp.cantidad) DESC " +
                    "LIMIT 4", nativeQuery = true)
     List<Producto> findTop4ProductosMasVendidos();
 }

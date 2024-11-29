@@ -9,7 +9,7 @@ public class HistorialPedidoDTO {
     private Long id;
     private Long productoId;
     private String nombreProducto;
-    private String imageUrl; // Nuevo campo para la URL de la imagen
+    private String imageUrl; // URL de la imagen del producto
     private int cantidad;
     private double subtotal;
     private String fecha;

@@ -17,4 +17,6 @@ public interface HistorialPedidoRepositorio extends JpaRepository<HistorialPedid
             "JOIN Producto p ON hp.productoId = p.id " +
             "WHERE hp.usuario.id = :usuarioId")
     List<HistorialPedidoDTO> findHistorialWithProductDetailsByUsuarioId(Long usuarioId);
+    
+    List<HistorialPedido> findByUsuarioId(Long usuarioId);
 }
