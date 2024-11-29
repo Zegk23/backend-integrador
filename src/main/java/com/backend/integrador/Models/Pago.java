@@ -17,8 +17,6 @@ public class Pago {
     @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;
 
-    @Column(name = "monto", nullable = false)
-    private double monto;
 
     @Column(name = "fecha", nullable = false)
     private String fecha;
@@ -32,6 +30,4 @@ public class Pago {
     @ManyToOne
     @JoinColumn(name = "metodo_pago_id", nullable = false)
     private MetodoPago metodoPago;
-
-    
 }

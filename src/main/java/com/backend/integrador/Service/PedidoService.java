@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,7 +37,8 @@ public class PedidoService {
     private PagoService pagoService;
 
     @Transactional
-    public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos, RecojoTienda recojoTienda, String stripePaymentId, String metodoPagoNombre) {
+    public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos, RecojoTienda recojoTienda,
+            String stripePaymentId, String metodoPagoNombre) {
         log.info("Iniciando creación del pedido...");
 
         validarParametros(stripePaymentId, metodoPagoNombre);
@@ -79,7 +79,8 @@ public class PedidoService {
 
     private void manejarRecojoEnTienda(Pedido pedido, RecojoTienda recojoTienda) {
         Direccion direccionTienda = direccionRepositorio.findByDireccionIgnoreCase(recojoTienda.getLocal())
-                .orElseThrow(() -> new IllegalArgumentException("Dirección para el local no encontrada: " + recojoTienda.getLocal()));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Dirección para el local no encontrada: " + recojoTienda.getLocal()));
         pedido.setDireccion(direccionTienda);
         Pedido pedidoGuardado = pedidoRepositorio.save(pedido);
         recojoTienda.setPedido(pedidoGuardado);
@@ -103,21 +104,35 @@ public class PedidoService {
     private void manejarProductos(Pedido pedido, List<PedidoProducto> productos) {
         for (PedidoProducto pedidoProducto : productos) {
             Producto producto = productoRepositorio.findById(pedidoProducto.getProducto().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + pedidoProducto.getProducto().getId()));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Producto no encontrado: " + pedidoProducto.getProducto().getId()));
             if (producto.getStock() < pedidoProducto.getCantidad()) {
                 throw new StockInsuficienteException("Stock insuficiente para el producto: " + producto.getNombre());
             }
+
+            // Actualiza el stock del producto
             producto.setStock(producto.getStock() - pedidoProducto.getCantidad());
             productoRepositorio.save(producto);
 
+            // Calcula y asigna el subtotal
+            pedidoProducto.setSubtotal(producto.getPrecio() * pedidoProducto.getCantidad());
             pedidoProducto.setProducto(producto);
             pedidoProducto.setPedido(pedido);
         }
+        // Guarda todos los productos relacionados con el pedido
         pedidoProductoRepositorio.saveAll(productos);
     }
 
     private void registrarPago(Pedido pedido, String stripePaymentId, String metodoPagoNombre) {
-        log.info("Delegando registro de pago al PagoService...");
-        pagoService.registrarPago(pedido, pedido.calcularTotal(), pedido.getFecha(), stripePaymentId, null, metodoPagoNombre);
+        // Asegúrate de que los subtotales están correctamente calculados
+        double montoTotal = pedidoProductoRepositorio.findByPedido(pedido).stream()
+                .mapToDouble(PedidoProducto::getSubtotal)
+                .sum();
+
+        log.info("Delegando registro de pago al PagoService con monto total: {}", montoTotal);
+
+        // Llamada al PagoService para registrar el pago
+        pagoService.registrarPago(pedido, montoTotal, pedido.getFecha(), stripePaymentId, metodoPagoNombre);
     }
+
 }

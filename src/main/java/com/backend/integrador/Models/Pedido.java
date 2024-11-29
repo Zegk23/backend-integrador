@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Getter
 @Setter
@@ -30,6 +32,7 @@ public class Pedido {
     private String estado = "Pendiente";
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<PedidoProducto> pedidoProductos = new ArrayList<>();
 
     public void agregarPedidoProducto(PedidoProducto pedidoProducto) {

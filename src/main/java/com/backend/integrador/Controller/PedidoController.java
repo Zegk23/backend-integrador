@@ -14,9 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+
+
 
 @Slf4j
 @RestController
@@ -37,10 +38,14 @@ public class PedidoController {
             Pedido pedido = pedidoRequest.getPedido();
             List<PedidoProducto> productos = pedidoRequest.getProductos();
             RecojoTienda recojoTienda = pedidoRequest.getRecojoTienda();
-            String stripePaymentId = "stripe_payment_id_mock"; // Cambia esto por el real
-            String metodoPagoNombre = "Tarjeta de crédito"; // Ajusta según el caso
 
-            Pedido nuevoPedido = pedidoService.crearPedido(pedido, productos, recojoTienda, stripePaymentId, metodoPagoNombre);
+            Pedido nuevoPedido = pedidoService.crearPedido(
+                    pedido, 
+                    productos, 
+                    recojoTienda, 
+                    "stripe_payment_id_mock", // Cambiar por el ID real del pago
+                    "Tarjeta de débito"
+            );
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setAmount((long) (nuevoPedido.calcularTotal() * 100)) // Total en centavos
@@ -61,19 +66,26 @@ public class PedidoController {
     @PostMapping("/crear-pedido")
     public ResponseEntity<?> crearPedido(@RequestBody PedidoRequest pedidoRequest) {
         try {
-            log.info("PedidoRequest recibido: {}", pedidoRequest);
-
             Pedido pedido = pedidoRequest.getPedido();
-            List<PedidoProducto> productos = pedidoRequest.getProductos();
-            RecojoTienda recojoTienda = pedidoRequest.getRecojoTienda();
-            String stripePaymentId = "stripe_payment_id_mock"; // Cambia esto por el real
-            String metodoPagoNombre = "Tarjeta de crédito"; // Ajusta según el caso
 
-            Pedido nuevoPedido = pedidoService.crearPedido(pedido, productos, recojoTienda, stripePaymentId, metodoPagoNombre);
+            if (pedido.getUsuario() == null || pedido.getUsuario().getId() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("El usuario debe estar asociado al pedido.");
+            }
+
+            Pedido nuevoPedido = pedidoService.crearPedido(
+                    pedido, 
+                    pedidoRequest.getProductos(), 
+                    pedidoRequest.getRecojoTienda(), 
+                    "stripe_payment_id_mock", 
+                    "Tarjeta de débito"
+            );
+
             return ResponseEntity.ok(nuevoPedido);
         } catch (Exception e) {
             log.error("Error al crear el pedido: ", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al procesar el pedido.");
         }
     }
 }
