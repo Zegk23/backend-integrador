@@ -1,5 +1,7 @@
 package com.backend.integrador.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +17,7 @@ public class TipoEntrega {
 
     @OneToOne
     @JoinColumn(name = "pedido_id", nullable = false)
+    @JsonIgnore
     private Pedido pedido;
 
     @Column(name = "tipo", nullable = false)

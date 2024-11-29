@@ -5,8 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Table(name = "usuario")
 public class Usuario {
     @Id
@@ -29,12 +32,15 @@ public class Usuario {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = "rol_id", nullable = false)  
+    @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
 
-    @OneToMany(mappedBy = "usuario")  
+    @OneToMany(mappedBy = "usuario")
+    @JsonManagedReference
     private List<Direccion> direcciones;
 
     @OneToMany(mappedBy = "usuario")
+    @JsonManagedReference
     private List<Pedido> pedidos;
+
 }

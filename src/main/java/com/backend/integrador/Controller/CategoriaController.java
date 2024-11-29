@@ -17,7 +17,7 @@ public class CategoriaController {
     @Autowired
     private CategoriaRepositorio categoriaRepositorio;
 
-    @GetMapping
+    @GetMapping("/obtenerCategorias")
     public List<Categoria> getAllCategorias() {
         return categoriaRepositorio.findAll();
     }

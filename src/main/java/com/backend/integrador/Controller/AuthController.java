@@ -41,29 +41,31 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody Login login) {
-    try {
-        Optional<Usuario> user = usuarioService.verificarUsuario(login.getCorreo(), login.getPassword());
-        if (user.isPresent()) {
-            Usuario usuario = user.get();
-            String token = jwtUtil.generarToken(usuario.getId(), usuario.getCorreo(), usuario.getNombre(), usuario.getTelefono()); // Modificar para incluir más datos en el token
+    public ResponseEntity<?> login(@RequestBody Login login) {
+        try {
+            Optional<Usuario> user = usuarioService.verificarUsuario(login.getCorreo(), login.getPassword());
+            if (user.isPresent()) {
+                Usuario usuario = user.get();
+                String token = jwtUtil.generarToken(usuario.getId(), usuario.getCorreo(), usuario.getNombre(),
+                        usuario.getTelefono()); // Modificar para incluir más datos en el token
 
-            // Usar ImmutableMap para devolver el token y detalles del usuario, incluido el ID
-            ImmutableMap<String, String> response = ImmutableMap.of(
-                    "token", token,
-                    "id", String.valueOf(usuario.getId()), // Convertir ID a String
-                    "nombre", usuario.getNombre(),
-                    "apellido", usuario.getApellido(),
-                    "correo", usuario.getCorreo(),
-                    "telefono", usuario.getTelefono());
+                // Usar ImmutableMap para devolver el token y detalles del usuario, incluido el
+                // ID
+                ImmutableMap<String, String> response = ImmutableMap.of(
+                        "token", token,
+                        "id", String.valueOf(usuario.getId()), // Convertir ID a String
+                        "nombre", usuario.getNombre(),
+                        "apellido", usuario.getApellido(),
+                        "correo", usuario.getCorreo(),
+                        "telefono", usuario.getTelefono());
 
-            return ResponseEntity.ok(response);
+                return ResponseEntity.ok(response);
+            }
+            return ResponseEntity.badRequest().body("Correo o contraseña incorrectos");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(500).body("Error al enviar el correo de inicio de sesión.");
         }
-        return ResponseEntity.badRequest().body("Correo o contraseña incorrectos");
-    } catch (MessagingException e) {
-        return ResponseEntity.status(500).body("Error al enviar el correo de inicio de sesión.");
     }
-}
 
     @PutMapping("/update")
     public ResponseEntity<?> actualizarUsuario(@RequestBody Usuario updatedUser,
@@ -80,7 +82,7 @@ public ResponseEntity<?> login(@RequestBody Login login) {
                 usuario.setTelefono(updatedUser.getTelefono());
 
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    usuarioService.actualizarContrasena(usuario, updatedUser.getPassword()); 
+                    usuarioService.actualizarContrasena(usuario, updatedUser.getPassword());
                 }
 
                 usuarioService.actualizarUsuario(usuario);

@@ -1,5 +1,7 @@
 package com.backend.integrador.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,7 @@ public class RecojoTienda {
 
     @ManyToOne
     @JoinColumn(name = "pedido_id", nullable = false)
+    @JsonIgnore
     private Pedido pedido;
 
     @Column(name = "local", nullable = false)

@@ -36,9 +36,12 @@ public class PedidoService {
     @Autowired
     private PagoService pagoService;
 
+    @Autowired
+    private HistorialPedidoService historialPedidoService; // Agregado
+
     @Transactional
     public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos, RecojoTienda recojoTienda,
-            String stripePaymentId, String metodoPagoNombre) {
+                              String stripePaymentId, String metodoPagoNombre) {
         log.info("Iniciando creación del pedido...");
 
         validarParametros(stripePaymentId, metodoPagoNombre);
@@ -63,6 +66,9 @@ public class PedidoService {
 
         // Registrar pago
         registrarPago(pedidoGuardado, stripePaymentId, metodoPagoNombre);
+
+        // Registrar historial del pedido
+        historialPedidoService.registrarHistorialPedido(productos); // Agregado
 
         log.info("Pedido creado exitosamente. ID: {}", pedidoGuardado.getId());
         return pedidoGuardado;
@@ -134,5 +140,4 @@ public class PedidoService {
         // Llamada al PagoService para registrar el pago
         pagoService.registrarPago(pedido, montoTotal, pedido.getFecha(), stripePaymentId, metodoPagoNombre);
     }
-
 }
