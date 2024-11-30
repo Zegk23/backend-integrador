@@ -4,7 +4,6 @@ import com.backend.integrador.Models.HistorialPedido;
 import com.backend.integrador.Models.PedidoProducto;
 import com.backend.integrador.Models.Producto;
 import com.backend.integrador.Repository.HistorialPedidoRepositorio;
-import com.backend.integrador.Repository.ProductoRepositorio; // Asegúrate de importar el repositorio adecuado
 
 import java.util.List;
 
@@ -18,9 +17,6 @@ public class HistorialPedidoService {
     @Autowired
     private HistorialPedidoRepositorio historialPedidoRepositorio;
 
-    @Autowired
-    private ProductoRepositorio productoRepository; // Asegúrate de que el repositorio está bien configurado
-
     @Transactional
     public void registrarHistorialPedido(List<PedidoProducto> pedidoProductos) {
         for (PedidoProducto pedidoProducto : pedidoProductos) {
@@ -33,7 +29,7 @@ public class HistorialPedidoService {
             // Obtener el producto y asignarlo al historialPedido
             Producto producto = pedidoProducto.getProducto();
             if (producto != null) {
-                historialPedido.setProductoId(producto.getId());  // Usar setProductoId aquí
+                historialPedido.setProductoId(producto.getId());  
             } else {
                 throw new IllegalArgumentException("Producto no encontrado para el pedido.");
             }

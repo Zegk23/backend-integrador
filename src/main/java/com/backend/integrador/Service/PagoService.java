@@ -19,20 +19,9 @@ public class PagoService {
     @Autowired
     private MetodoPagoRepositorio metodoPagoRepositorio;
 
-    /**
-     * Registra un pago en la base de datos.
-     *
-     * @param pedido           El pedido relacionado con el pago.
-     * @param monto            El monto total del pago (calculado directamente del pedido).
-     * @param fecha            La fecha del pago.
-     * @param stripePaymentId  El ID del pago generado por Stripe.
-     * @param metodoPagoNombre El nombre del método de pago (por ejemplo, "Tarjeta de débito").
-     * @return El objeto Pago registrado.
-     */
     public Pago registrarPago(Pedido pedido, double monto, String fecha, String stripePaymentId, String metodoPagoNombre) {
         log.info("Iniciando registro de pago para el pedido ID: {}", pedido.getId());
 
-        // Buscar o crear el método de pago
         MetodoPago metodoPago = metodoPagoRepositorio.findByNombre(metodoPagoNombre)
                 .orElseGet(() -> {
                     log.info("Método de pago '{}' no encontrado. Creando uno nuevo.", metodoPagoNombre);
@@ -43,7 +32,6 @@ public class PagoService {
                     return metodoPagoRepositorio.save(nuevoMetodoPago);
                 });
 
-        // Crear y guardar el pago
         Pago pago = new Pago();
         pago.setPedido(pedido);
         pago.setFecha(fecha);

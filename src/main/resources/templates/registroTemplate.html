@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
+    <title>Registro Exitoso</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            color: #333;
             margin: 0;
             padding: 0;
+            color: #333;
         }
         .container {
             max-width: 600px;
@@ -74,18 +74,15 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>Bienvenido a Velazco Panadería y Dulcería</h1>
+            <h1>¡Registro Exitoso!</h1>
         </div>
-        <!-- Content -->
         <div class="content">
             <p>Hola, <strong th:text="${nombre}"></strong>!</p>
-            <p>Gracias por registrarte en nuestra plataforma. Te damos una cálida bienvenida y esperamos que disfrutes de nuestros productos y servicios.</p>
-            <p>Si tienes alguna consulta o necesitas asistencia, no dudes en contactarnos. Estamos aquí para ayudarte.</p>
-            <a href="http://localhost:3000/productos" class="btn-primary">Ver Nuestros Productos</a>
+            <p>Te damos la bienvenida a <strong>Velazco Panadería y Dulcería</strong>. Nos alegra mucho que hayas decidido unirte a nuestra comunidad.</p>
+            <p>Ahora puedes disfrutar de todos nuestros productos y servicios en línea. Explora nuestro catálogo y no dudes en contactarnos si necesitas ayuda.</p>
+            <a href="http://localhost:3000/productos" class="btn-primary">Explorar Productos</a>
         </div>
-        <!-- Footer -->
         <div class="footer">
             <p>&copy; 2024 Velazco Panadería y Dulcería</p>
             <p><a href="mailto:velazcopanaderiaydulceria@gmail.com">velazcopanaderiaydulceria@gmail.com</a></p>

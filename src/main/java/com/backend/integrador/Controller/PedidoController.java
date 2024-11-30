@@ -6,6 +6,7 @@ import com.backend.integrador.Models.PedidoProducto;
 import com.backend.integrador.Models.RecojoTienda;
 import com.backend.integrador.Service.PedidoService;
 import com.backend.integrador.Service.StripeService;
+import com.backend.integrador.Util.JWTUtil;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
-
 @Slf4j
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidoController {
+
+    @Autowired
+    private JWTUtil jwtUtil; 
 
     @Autowired
     private PedidoService pedidoService;
@@ -40,15 +42,14 @@ public class PedidoController {
             RecojoTienda recojoTienda = pedidoRequest.getRecojoTienda();
 
             Pedido nuevoPedido = pedidoService.crearPedido(
-                    pedido, 
-                    productos, 
-                    recojoTienda, 
-                    "stripe_payment_id_mock", // Cambiar por el ID real del pago
-                    "Tarjeta de débito"
-            );
+                    pedido,
+                    productos,
+                    recojoTienda,
+                    "stripe_payment_id_mock", 
+                    "Tarjeta de débito");
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                    .setAmount((long) (nuevoPedido.calcularTotal() * 100)) // Total en centavos
+                    .setAmount((long) (nuevoPedido.calcularTotal() * 100)) 
                     .setCurrency("pen")
                     .setDescription("Compra en Mi Tienda")
                     .build();
@@ -64,22 +65,35 @@ public class PedidoController {
     }
 
     @PostMapping("/crear-pedido")
-    public ResponseEntity<?> crearPedido(@RequestBody PedidoRequest pedidoRequest) {
+    public ResponseEntity<?> crearPedido(@RequestHeader("Authorization") String token,
+            @RequestBody PedidoRequest pedidoRequest) {
         try {
+            // Validar si el token está presente
+            if (token == null || !token.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no proporcionado o inválido.");
+            }
+
+            String jwtToken = token.substring(7); 
+            if (!jwtUtil.validarToken(jwtToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido o expirado.");
+            }
+
+            // Extraer el userId del token
+            Long userIdFromToken = jwtUtil.getUserId(jwtToken);
+
             Pedido pedido = pedidoRequest.getPedido();
 
-            if (pedido.getUsuario() == null || pedido.getUsuario().getId() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("El usuario debe estar asociado al pedido.");
+            if (pedido.getUsuario() == null || !pedido.getUsuario().getId().equals(userIdFromToken)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("El usuario del pedido no coincide con el usuario autenticado.");
             }
 
             Pedido nuevoPedido = pedidoService.crearPedido(
-                    pedido, 
-                    pedidoRequest.getProductos(), 
-                    pedidoRequest.getRecojoTienda(), 
-                    "stripe_payment_id_mock", 
-                    "Tarjeta de débito"
-            );
+                    pedido,
+                    pedidoRequest.getProductos(),
+                    pedidoRequest.getRecojoTienda(),
+                    "stripe_payment_id_mock",
+                    "Tarjeta de débito");
 
             return ResponseEntity.ok(nuevoPedido);
         } catch (Exception e) {
@@ -88,4 +102,5 @@ public class PedidoController {
                     .body("Error al procesar el pedido.");
         }
     }
+
 }

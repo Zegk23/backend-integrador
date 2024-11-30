@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Pedido</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 40px auto;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #C07648;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px 30px;
+        }
+        .content h2 {
+            color: #C07648;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .content p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button-container a {
+            background-color: #C07648;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .button-container a:hover {
+            background-color: #a35f3c;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f1f1f1;
+            color: #555;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #C07648;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Gracias por tu pedido, <span th:text="${nombre}"></span>!</h1>
+        </div>
+        <div class="content">
+            <h2>Tu pedido ha sido procesado exitosamente</h2>
+            <p>¡Nos alegra mucho que confíes en Velazco Panadería y Dulcería! Estamos trabajando para asegurarnos de que recibas tu pedido lo antes posible.</p>
+            <p>Si tienes alguna pregunta o necesitas soporte, no dudes en contactarnos. ¡Estamos aquí para ayudarte!</p>
+        </div>
+        <div class="footer">
+            <p>Velazco Panadería y Dulcería</p>
+            <p><a href="mailto:velazcopanaderiaydulceria@gmail.com">velazcopanaderiaydulceria@gmail.com</a></p>
+            <p>&copy; 2024 Velazco Panadería y Dulcería. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

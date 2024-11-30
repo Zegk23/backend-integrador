@@ -3,12 +3,10 @@ package com.backend.integrador.Service;
 import com.backend.integrador.Exceptions.StockInsuficienteException;
 import com.backend.integrador.Models.*;
 import com.backend.integrador.Repository.*;
-
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -17,6 +15,9 @@ public class PedidoService {
 
     @Autowired
     private PedidoRepositorio pedidoRepositorio;
+
+    @Autowired
+    private ConfirmacionPedidoService confirmacionPedidoService;
 
     @Autowired
     private PedidoProductoRepositorio pedidoProductoRepositorio;
@@ -37,7 +38,10 @@ public class PedidoService {
     private PagoService pagoService;
 
     @Autowired
-    private HistorialPedidoService historialPedidoService; // Agregado
+    private HistorialPedidoService historialPedidoService;
+
+    @Autowired
+    private CorreosService correosService; // Servicio para enviar correos
 
     @Transactional
     public Pedido crearPedido(Pedido pedido, List<PedidoProducto> productos, RecojoTienda recojoTienda,
@@ -46,29 +50,25 @@ public class PedidoService {
 
         validarParametros(stripePaymentId, metodoPagoNombre);
 
-        // Validar usuario
-        Usuario usuario = usuarioRepositorio.findById(pedido.getUsuario().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        Usuario usuario = validarUsuario(pedido.getUsuario().getId());
         pedido.setUsuario(usuario);
 
-        // Manejo de dirección o recojo en tienda
         if (pedido.getDireccion() == null && recojoTienda != null) {
             manejarRecojoEnTienda(pedido, recojoTienda);
         } else if (pedido.getDireccion() != null) {
             manejarDelivery(pedido, usuario);
         }
 
-        // Guardar pedido
         Pedido pedidoGuardado = pedidoRepositorio.save(pedido);
 
-        // Manejo de productos
         manejarProductos(pedidoGuardado, productos);
 
-        // Registrar pago
         registrarPago(pedidoGuardado, stripePaymentId, metodoPagoNombre);
 
-        // Registrar historial del pedido
-        historialPedidoService.registrarHistorialPedido(productos); // Agregado
+        historialPedidoService.registrarHistorialPedido(productos);
+
+        // Enviar correo de confirmación
+        enviarCorreoConfirmacion(pedidoGuardado, usuario);
 
         log.info("Pedido creado exitosamente. ID: {}", pedidoGuardado.getId());
         return pedidoGuardado;
@@ -83,12 +83,20 @@ public class PedidoService {
         }
     }
 
+    private Usuario validarUsuario(Long usuarioId) {
+        return usuarioRepositorio.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    }
+
     private void manejarRecojoEnTienda(Pedido pedido, RecojoTienda recojoTienda) {
         Direccion direccionTienda = direccionRepositorio.findByDireccionIgnoreCase(recojoTienda.getLocal())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Dirección para el local no encontrada: " + recojoTienda.getLocal()));
+
         pedido.setDireccion(direccionTienda);
+
         Pedido pedidoGuardado = pedidoRepositorio.save(pedido);
+
         recojoTienda.setPedido(pedidoGuardado);
         recojoTiendaRepositorio.save(recojoTienda);
     }
@@ -104,6 +112,7 @@ public class PedidoService {
                     pedido.getDireccion().setUsuario(usuario);
                     return direccionRepositorio.save(pedido.getDireccion());
                 });
+
         pedido.setDireccion(direccionPedido);
     }
 
@@ -112,32 +121,50 @@ public class PedidoService {
             Producto producto = productoRepositorio.findById(pedidoProducto.getProducto().getId())
                     .orElseThrow(() -> new IllegalArgumentException(
                             "Producto no encontrado: " + pedidoProducto.getProducto().getId()));
+
             if (producto.getStock() < pedidoProducto.getCantidad()) {
                 throw new StockInsuficienteException("Stock insuficiente para el producto: " + producto.getNombre());
             }
 
-            // Actualiza el stock del producto
             producto.setStock(producto.getStock() - pedidoProducto.getCantidad());
             productoRepositorio.save(producto);
 
-            // Calcula y asigna el subtotal
             pedidoProducto.setSubtotal(producto.getPrecio() * pedidoProducto.getCantidad());
             pedidoProducto.setProducto(producto);
             pedidoProducto.setPedido(pedido);
         }
-        // Guarda todos los productos relacionados con el pedido
+
         pedidoProductoRepositorio.saveAll(productos);
     }
 
     private void registrarPago(Pedido pedido, String stripePaymentId, String metodoPagoNombre) {
-        // Asegúrate de que los subtotales están correctamente calculados
         double montoTotal = pedidoProductoRepositorio.findByPedido(pedido).stream()
                 .mapToDouble(PedidoProducto::getSubtotal)
                 .sum();
 
-        log.info("Delegando registro de pago al PagoService con monto total: {}", montoTotal);
+        log.info("Registrando pago con monto total: {}", montoTotal);
 
-        // Llamada al PagoService para registrar el pago
         pagoService.registrarPago(pedido, montoTotal, pedido.getFecha(), stripePaymentId, metodoPagoNombre);
     }
+
+    private void enviarCorreoConfirmacion(Pedido pedido, Usuario usuario) {
+        try {
+            correosService.sendEmail(
+                    usuario.getCorreo(), // Cambia getEmail() a getCorreo() para que coincida con tu modelo
+                    "Confirmación de Pedido - Velazco Panadería y Dulcería",
+                    "confirmacionPedidoTemplate", // Nombre del template Thymeleaf
+                    usuario.getNombre()
+            );
+    
+            log.info("Correo de confirmación enviado exitosamente al usuario: {}", usuario.getCorreo());
+    
+            // Registrar la confirmación del pedido en la base de datos
+            confirmacionPedidoService.registrarConfirmacion(pedido, usuario.getCorreo());
+    
+        } catch (Exception e) {
+            log.error("Error al enviar el correo de confirmación: {}", e.getMessage(), e);
+        }
+    }
+    
+    
 }
