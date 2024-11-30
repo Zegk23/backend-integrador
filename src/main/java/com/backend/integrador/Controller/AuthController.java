@@ -7,6 +7,9 @@ import com.backend.integrador.Service.UsuarioService;
 import com.backend.integrador.Util.JWTUtil;
 import com.google.common.collect.ImmutableMap;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +34,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login, HttpServletRequest request) {
-        String key = login.getCorreo();
+        // Sanitizar entrada contra XSS
+        String sanitizedCorreo = Jsoup.clean(login.getCorreo(), Safelist.basic());
+        String sanitizedPassword = Jsoup.clean(login.getPassword(), Safelist.none());
+
+        String key = sanitizedCorreo;
 
         if (loginAttemptService.isBlocked(key)) {
             return ResponseEntity.status(403)
@@ -39,7 +46,7 @@ public class AuthController {
         }
 
         try {
-            Optional<Usuario> user = usuarioService.verificarUsuario(login.getCorreo(), login.getPassword());
+            Optional<Usuario> user = usuarioService.verificarUsuario(sanitizedCorreo, sanitizedPassword);
             if (user.isPresent()) {
                 loginAttemptService.loginSucceeded(key);
 
@@ -98,23 +105,30 @@ public class AuthController {
             Optional<Usuario> user = usuarioService.obtenerUsuarioPorCorreo(correo);
 
             return user.map(usuario -> {
-                if (updatedUser.getNombre() == null || updatedUser.getNombre().isEmpty()) {
+                // Sanitizar entrada contra XSS
+                String sanitizedNombre = Jsoup.clean(updatedUser.getNombre(), Safelist.basic());
+                String sanitizedApellido = Jsoup.clean(updatedUser.getApellido(), Safelist.basic());
+                String sanitizedCorreo = Jsoup.clean(updatedUser.getCorreo(), Safelist.basic());
+                String sanitizedTelefono = Jsoup.clean(updatedUser.getTelefono(), Safelist.none());
+
+                if (sanitizedNombre == null || sanitizedNombre.isEmpty()) {
                     return ResponseEntity.badRequest().body("El nombre no puede estar vacío");
                 }
-                if (updatedUser.getApellido() == null || updatedUser.getApellido().isEmpty()) {
+                if (sanitizedApellido == null || sanitizedApellido.isEmpty()) {
                     return ResponseEntity.badRequest().body("El apellido no puede estar vacío");
                 }
 
-                usuario.setNombre(updatedUser.getNombre());
-                usuario.setApellido(updatedUser.getApellido());
-                usuario.setTelefono(updatedUser.getTelefono());
+                usuario.setNombre(sanitizedNombre);
+                usuario.setApellido(sanitizedApellido);
+                usuario.setTelefono(sanitizedTelefono);
 
-                if (!usuario.getCorreo().equals(updatedUser.getCorreo())) {
-                    usuario.setCorreo(updatedUser.getCorreo());
+                if (!usuario.getCorreo().equals(sanitizedCorreo)) {
+                    usuario.setCorreo(sanitizedCorreo);
                 }
 
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    usuarioService.actualizarContrasena(usuario, updatedUser.getPassword());
+                    String sanitizedPassword = Jsoup.clean(updatedUser.getPassword(), Safelist.none());
+                    usuarioService.actualizarContrasena(usuario, sanitizedPassword);
                 }
 
                 usuarioService.actualizarUsuario(usuario);
