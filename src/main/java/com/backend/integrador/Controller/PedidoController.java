@@ -24,7 +24,7 @@ import java.util.Map;
 public class PedidoController {
 
     @Autowired
-    private JWTUtil jwtUtil; 
+    private JWTUtil jwtUtil;
 
     @Autowired
     private PedidoService pedidoService;
@@ -45,11 +45,11 @@ public class PedidoController {
                     pedido,
                     productos,
                     recojoTienda,
-                    "stripe_payment_id_mock", 
+                    "stripe_payment_id_mock",
                     "Tarjeta de débito");
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                    .setAmount((long) (nuevoPedido.calcularTotal() * 100)) 
+                    .setAmount((long) (nuevoPedido.calcularTotal() * 100))
                     .setCurrency("pen")
                     .setDescription("Compra en Mi Tienda")
                     .build();
@@ -66,23 +66,23 @@ public class PedidoController {
 
     @PostMapping("/crear-pedido")
     public ResponseEntity<?> crearPedido(@RequestHeader("Authorization") String token,
-            @RequestBody PedidoRequest pedidoRequest) {
+                                         @RequestBody PedidoRequest pedidoRequest) {
         try {
             // Validar si el token está presente
             if (token == null || !token.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no proporcionado o inválido.");
             }
 
-            String jwtToken = token.substring(7); 
+            String jwtToken = token.substring(7); // Remover "Bearer " del token
             if (!jwtUtil.validarToken(jwtToken)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido o expirado.");
             }
 
-            // Extraer el userId del token
             Long userIdFromToken = jwtUtil.getUserId(jwtToken);
 
             Pedido pedido = pedidoRequest.getPedido();
 
+            // Validar que el usuario del pedido coincida con el usuario autenticado
             if (pedido.getUsuario() == null || !pedido.getUsuario().getId().equals(userIdFromToken)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("El usuario del pedido no coincide con el usuario autenticado.");
@@ -102,5 +102,4 @@ public class PedidoController {
                     .body("Error al procesar el pedido.");
         }
     }
-
 }
