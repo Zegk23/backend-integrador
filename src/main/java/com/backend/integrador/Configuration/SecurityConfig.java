@@ -13,18 +13,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Desactivar CSRF (opcional durante desarrollo)
+                .csrf(csrf -> csrf.disable()) 
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permitir acceso sin autenticación a ciertas rutas de la API
+                        // Permitir acceso público a ciertas rutas
                         .requestMatchers("/api/productos/**").permitAll()
                         .requestMatchers("/api/categorias/**").permitAll()
                         .requestMatchers("/api/contacto/**").permitAll()
                         .requestMatchers("/api/usuarios/registrar").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/historial-pedidos/**").permitAll() // Permitir acceso a historial-pedidos
-                        .requestMatchers("/api/pedidos/**").permitAll() // Permitir acceso completo a pedidos
-                        .requestMatchers("/api/historial-pedidos").permitAll()
-                        .anyRequest().authenticated()); // Requiere autenticación para las demás rutas
+                        
+                        // Proteger rutas sensibles
+                        .requestMatchers("/api/historial-pedidos/**").authenticated()
+                        .requestMatchers("/api/pedidos/**").authenticated()
+                        
+                        // Requiere autenticación para cualquier otra solicitud
+                        .anyRequest().authenticated())
+                .cors(cors -> cors.configure(http)); // Asegúrate de habilitar la configuración de CORS
         return http.build();
     }
 }

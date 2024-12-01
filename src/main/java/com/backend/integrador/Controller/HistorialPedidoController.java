@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/historial-pedidos")
-@CrossOrigin(origins = "http://localhost:3000")
 public class HistorialPedidoController {
 
     @Autowired

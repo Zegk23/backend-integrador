@@ -7747,3 +7747,111 @@ This generated password is for development use only. Your security configuration
 2024-11-30 19:34:06.187 [http-nio-8081-exec-5] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
 2024-11-30 19:34:06.188 [http-nio-8081-exec-5] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
 2024-11-30 19:34:06.190 [http-nio-8081-exec-5] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2024-11-30 19:42:50.723 [main] INFO  c.b.integrador.IntegradorApplication - Starting IntegradorApplication using Java 21.0.4 with PID 16652 (C:\Users\lmart\OneDrive\Documents\ProyectoIntegradorBackend\integrador\target\classes started by lmart in C:\Users\lmart\OneDrive\Documents\ProyectoIntegradorBackend\integrador)
+2024-11-30 19:42:50.727 [main] INFO  c.b.integrador.IntegradorApplication - No active profile set, falling back to 1 default profile: "default"
+2024-11-30 19:42:51.856 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-30 19:42:51.977 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 106 ms. Found 15 JPA repository interfaces.
+2024-11-30 19:42:53.551 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2024-11-30 19:42:53.575 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2024-11-30 19:42:53.585 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-11-30 19:42:53.586 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-11-30 19:42:53.694 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-11-30 19:42:53.695 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2908 ms
+2024-11-30 19:42:53.894 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-30 19:42:53.964 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-11-30 19:42:54.003 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2024-11-30 19:42:54.331 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-30 19:42:54.374 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-11-30 19:42:54.653 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@f810c18
+2024-11-30 19:42:54.657 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-11-30 19:42:54.729 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-11-30 19:42:54.731 [main] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2024-11-30 19:42:55.845 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-30 19:42:55.848 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-30 19:42:56.366 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-30 19:42:57.088 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-11-30 19:42:57.128 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: d1e02c47-4584-4b92-acd1-5451637ade58
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-11-30 19:42:57.157 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2024-11-30 19:42:57.754 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2024-11-30 19:42:57.781 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2024-11-30 19:42:57.791 [main] INFO  c.b.integrador.IntegradorApplication - Started IntegradorApplication in 7.966 seconds (process running for 8.472)
+2024-11-30 19:44:40.820 [http-nio-8081-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-11-30 19:44:40.820 [http-nio-8081-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-11-30 19:44:40.822 [http-nio-8081-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2024-11-30 19:48:17.164 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Iniciando creación del pedido...
+2024-11-30 19:48:17.253 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Registrando pago con monto total: 19.5
+2024-11-30 19:48:17.253 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PagoService - Iniciando registro de pago para el pedido ID: 1
+2024-11-30 19:48:17.353 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PagoService - Pago registrado con éxito: com.backend.integrador.Models.Pago@3cc8eb4e
+2024-11-30 19:48:20.617 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Correo de confirmación enviado exitosamente al usuario: Prueba213213@gmail.com
+2024-11-30 19:48:20.621 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Pedido creado exitosamente. ID: 1
+2024-11-30 19:51:18.165 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Iniciando creación del pedido...
+2024-11-30 19:51:18.211 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Registrando pago con monto total: 27.5
+2024-11-30 19:51:18.211 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PagoService - Iniciando registro de pago para el pedido ID: 2
+2024-11-30 19:51:18.219 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PagoService - Pago registrado con éxito: com.backend.integrador.Models.Pago@32ad20c
+2024-11-30 19:51:22.149 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Correo de confirmación enviado exitosamente al usuario: Prueba213213@gmail.com
+2024-11-30 19:51:22.151 [http-nio-8081-exec-8] INFO  c.b.integrador.Service.PedidoService - Pedido creado exitosamente. ID: 2
+2024-11-30 20:41:18.263 [http-nio-8081-exec-1] INFO  c.b.integrador.Service.PedidoService - Iniciando creación del pedido...
+2024-11-30 20:41:18.366 [http-nio-8081-exec-1] INFO  c.b.integrador.Service.PedidoService - Registrando pago con monto total: 11.4
+2024-11-30 20:41:18.367 [http-nio-8081-exec-1] INFO  c.b.integrador.Service.PagoService - Iniciando registro de pago para el pedido ID: 3
+2024-11-30 20:41:18.375 [http-nio-8081-exec-1] INFO  c.b.integrador.Service.PagoService - Pago registrado con éxito: com.backend.integrador.Models.Pago@4554a305
+2024-11-30 20:41:21.793 [http-nio-8081-exec-1] INFO  c.b.integrador.Service.PedidoService - Correo de confirmación enviado exitosamente al usuario: lmartinezquijandria@gmail.com
+2024-11-30 20:41:21.796 [http-nio-8081-exec-1] INFO  c.b.integrador.Service.PedidoService - Pedido creado exitosamente. ID: 3
+2024-11-30 20:43:57.133 [http-nio-8081-exec-10] INFO  c.b.integrador.Service.PedidoService - Iniciando creación del pedido...
+2024-11-30 20:43:57.197 [http-nio-8081-exec-10] INFO  c.b.integrador.Service.PedidoService - Registrando pago con monto total: 8.5
+2024-11-30 20:43:57.198 [http-nio-8081-exec-10] INFO  c.b.integrador.Service.PagoService - Iniciando registro de pago para el pedido ID: 4
+2024-11-30 20:43:57.205 [http-nio-8081-exec-10] INFO  c.b.integrador.Service.PagoService - Pago registrado con éxito: com.backend.integrador.Models.Pago@5136e14c
+2024-11-30 20:44:00.551 [http-nio-8081-exec-10] INFO  c.b.integrador.Service.PedidoService - Correo de confirmación enviado exitosamente al usuario: lmartinezquijandria@gmail.com
+2024-11-30 20:44:00.558 [http-nio-8081-exec-10] INFO  c.b.integrador.Service.PedidoService - Pedido creado exitosamente. ID: 4
+2024-11-30 21:33:23.166 [http-nio-8081-exec-4] INFO  c.b.integrador.Service.PedidoService - Iniciando creación del pedido...
+2024-11-30 21:33:23.197 [http-nio-8081-exec-4] INFO  c.b.integrador.Service.PedidoService - Registrando pago con monto total: 28.0
+2024-11-30 21:33:23.198 [http-nio-8081-exec-4] INFO  c.b.integrador.Service.PagoService - Iniciando registro de pago para el pedido ID: 5
+2024-11-30 21:33:23.281 [http-nio-8081-exec-4] INFO  c.b.integrador.Service.PagoService - Pago registrado con éxito: com.backend.integrador.Models.Pago@519f5e2c
+2024-11-30 21:33:26.730 [http-nio-8081-exec-4] INFO  c.b.integrador.Service.PedidoService - Correo de confirmación enviado exitosamente al usuario: lmartinezquijandria@gmail.com
+2024-11-30 21:33:26.733 [http-nio-8081-exec-4] INFO  c.b.integrador.Service.PedidoService - Pedido creado exitosamente. ID: 5
+2024-11-30 21:35:28.137 [http-nio-8081-exec-6] INFO  c.b.integrador.Service.PedidoService - Iniciando creación del pedido...
+2024-11-30 21:35:28.229 [http-nio-8081-exec-6] INFO  c.b.integrador.Service.PedidoService - Registrando pago con monto total: 23.0
+2024-11-30 21:35:28.231 [http-nio-8081-exec-6] INFO  c.b.integrador.Service.PagoService - Iniciando registro de pago para el pedido ID: 6
+2024-11-30 21:35:28.258 [http-nio-8081-exec-6] INFO  c.b.integrador.Service.PagoService - Pago registrado con éxito: com.backend.integrador.Models.Pago@7ea8b171
+2024-11-30 21:35:31.524 [http-nio-8081-exec-6] INFO  c.b.integrador.Service.PedidoService - Correo de confirmación enviado exitosamente al usuario: lmartinezquijandria@gmail.com
+2024-11-30 21:35:31.528 [http-nio-8081-exec-6] INFO  c.b.integrador.Service.PedidoService - Pedido creado exitosamente. ID: 6
+2024-11-30 22:22:56.152 [main] INFO  c.b.integrador.IntegradorApplication - Starting IntegradorApplication using Java 21.0.4 with PID 27652 (C:\Users\lmart\OneDrive\Documents\ProyectoIntegradorBackend\integrador\target\classes started by lmart in C:\Users\lmart\OneDrive\Documents\ProyectoIntegradorBackend\integrador)
+2024-11-30 22:22:56.158 [main] INFO  c.b.integrador.IntegradorApplication - No active profile set, falling back to 1 default profile: "default"
+2024-11-30 22:22:57.613 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-11-30 22:22:57.961 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 312 ms. Found 15 JPA repository interfaces.
+2024-11-30 22:22:59.494 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2024-11-30 22:22:59.512 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2024-11-30 22:22:59.521 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-11-30 22:22:59.523 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-11-30 22:22:59.645 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-11-30 22:22:59.647 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3298 ms
+2024-11-30 22:23:00.130 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-11-30 22:23:00.290 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-11-30 22:23:00.380 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2024-11-30 22:23:00.976 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-11-30 22:23:01.111 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2024-11-30 22:23:01.621 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6cc8adff
+2024-11-30 22:23:01.626 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2024-11-30 22:23:01.696 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-11-30 22:23:01.698 [main] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2024-11-30 22:23:03.238 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-11-30 22:23:03.245 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-11-30 22:23:03.843 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-11-30 22:23:04.885 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-11-30 22:23:04.946 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: c65d3485-bb72-4040-a7bd-0ace8d9500bb
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-11-30 22:23:04.997 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2024-11-30 22:23:06.245 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2024-11-30 22:23:06.274 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2024-11-30 22:23:06.287 [main] INFO  c.b.integrador.IntegradorApplication - Started IntegradorApplication in 10.989 seconds (process running for 11.501)
+2024-11-30 22:23:19.353 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-11-30 22:23:19.354 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2024-11-30 22:23:19.356 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms

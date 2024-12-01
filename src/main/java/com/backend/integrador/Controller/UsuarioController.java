@@ -11,7 +11,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 

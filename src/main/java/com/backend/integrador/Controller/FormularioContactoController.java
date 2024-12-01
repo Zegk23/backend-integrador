@@ -15,7 +15,6 @@ import org.jsoup.safety.Safelist;
 
 @RestController
 @RequestMapping("/api/contacto")
-@CrossOrigin(origins = "http://localhost:3000")
 public class FormularioContactoController {
 
     @Autowired
