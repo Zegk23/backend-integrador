@@ -19,4 +19,5 @@ public interface HistorialPedidoRepositorio extends JpaRepository<HistorialPedid
     List<HistorialPedidoDTO> findHistorialWithProductDetailsByUsuarioId(Long usuarioId);
     
     List<HistorialPedido> findByUsuarioId(Long usuarioId);
+    List<HistorialPedido> findByPedidoId(Long pedidoId);
 }
