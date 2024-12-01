@@ -13,7 +13,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) 
+                .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF temporalmente
                 .authorizeHttpRequests(authorize -> authorize
                         // Permitir acceso público a ciertas rutas
                         .requestMatchers("/api/productos/**").permitAll()
@@ -21,10 +21,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/contacto/**").permitAll()
                         .requestMatchers("/api/usuarios/registrar").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        
-                        // Proteger rutas sensibles
-                        .requestMatchers("/api/historial-pedidos/**").authenticated()
-                        .requestMatchers("/api/pedidos/**").authenticated()
+                        .requestMatchers("/api/historial-pedidos/**").permitAll() // Cambiado a acceso público
+                        .requestMatchers("/api/pedidos/**").permitAll() // Cambiado a acceso público
                         
                         // Requiere autenticación para cualquier otra solicitud
                         .anyRequest().authenticated())
