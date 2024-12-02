@@ -79,49 +79,61 @@ public class AuthController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> actualizarUsuario(@RequestBody Usuario updatedUser,
-                                               @RequestHeader("Authorization") String token,
-                                               HttpServletRequest request) {
-        if (token == null || token.isEmpty()) {
-            return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El token de autorización es obligatorio"));
-        }
-    
-        try {
-            String jwtToken = token.replace("Bearer ", "");
-            String ip = Optional.ofNullable(request.getHeader("X-Forwarded-For")).orElse(request.getRemoteAddr());
-    
-            if (!jwtUtil.validarTokenConIP(jwtToken, ip)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(ImmutableMap.of("error", "Token inválido o utilizado desde una ubicación no autorizada."));
-            }
-    
-            String correo = jwtUtil.getCorreoFromToken(jwtToken);
-            Optional<Usuario> user = usuarioService.obtenerUsuarioPorCorreo(correo);
-    
-            return user.map(usuario -> {
-                String sanitizedNombre = Jsoup.clean(updatedUser.getNombre(), Safelist.basic());
-                String sanitizedApellido = Jsoup.clean(updatedUser.getApellido(), Safelist.basic());
-                String sanitizedTelefono = Jsoup.clean(updatedUser.getTelefono(), Safelist.none());
-    
-                if (sanitizedNombre == null || sanitizedNombre.isEmpty()) {
-                    return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El nombre no puede estar vacío"));
-                }
-                if (sanitizedApellido == null || sanitizedApellido.isEmpty()) {
-                    return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El apellido no puede estar vacío"));
-                }
-    
-                usuario.setNombre(sanitizedNombre);
-                usuario.setApellido(sanitizedApellido);
-                usuario.setTelefono(sanitizedTelefono);
-    
-                usuarioService.actualizarUsuario(usuario);
-    
-                return ResponseEntity.ok(ImmutableMap.of("mensaje", "Datos del usuario actualizados exitosamente"));
-            }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ImmutableMap.of("error", "Usuario no encontrado")));
-    
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ImmutableMap.of("error", "Error al actualizar los datos del usuario"));
-        }
+public ResponseEntity<?> actualizarUsuario(@RequestBody Usuario updatedUser,
+                                           @RequestHeader("Authorization") String token,
+                                           HttpServletRequest request) {
+    if (token == null || token.isEmpty()) {
+        return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El token de autorización es obligatorio"));
     }
+
+    try {
+        String jwtToken = token.replace("Bearer ", "");
+        String ip = Optional.ofNullable(request.getHeader("X-Forwarded-For")).orElse(request.getRemoteAddr());
+
+        if (!jwtUtil.validarTokenConIP(jwtToken, ip)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ImmutableMap.of("error", "Token inválido o utilizado desde una ubicación no autorizada."));
+        }
+
+        String correo = jwtUtil.getCorreoFromToken(jwtToken);
+        Optional<Usuario> user = usuarioService.obtenerUsuarioPorCorreo(correo);
+
+        return user.map(usuario -> {
+            String sanitizedNombre = Jsoup.clean(updatedUser.getNombre(), Safelist.basic());
+            String sanitizedApellido = Jsoup.clean(updatedUser.getApellido(), Safelist.basic());
+            String sanitizedCorreo = Jsoup.clean(updatedUser.getCorreo(), Safelist.basic());
+            String sanitizedTelefono = Jsoup.clean(updatedUser.getTelefono(), Safelist.none());
+
+            if (sanitizedNombre == null || sanitizedNombre.isEmpty()) {
+                return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El nombre no puede estar vacío"));
+            }
+            if (sanitizedApellido == null || sanitizedApellido.isEmpty()) {
+                return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El apellido no puede estar vacío"));
+            }
+            if (sanitizedCorreo == null || sanitizedCorreo.isEmpty()) {
+                return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El correo no puede estar vacío"));
+            }
+
+            // Actualizar los datos del usuario
+            usuario.setNombre(sanitizedNombre);
+            usuario.setApellido(sanitizedApellido);
+            usuario.setTelefono(sanitizedTelefono);
+
+            // Actualizar el correo si es diferente
+            if (!usuario.getCorreo().equals(sanitizedCorreo)) {
+                usuario.setCorreo(sanitizedCorreo);
+            }
+
+            usuarioService.actualizarUsuario(usuario);
+
+            return ResponseEntity.ok(ImmutableMap.of("mensaje", "Datos del usuario actualizados exitosamente"));
+        }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ImmutableMap.of("error", "Usuario no encontrado")));
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ImmutableMap.of("error", "Error al actualizar los datos del usuario"));
+    }
+}
+
     
 }
