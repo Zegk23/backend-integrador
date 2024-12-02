@@ -63,8 +63,7 @@ public class AuthController {
                         usuario.getCorreo(),
                         usuario.getTelefono(),
                         usuario.getRol().getId(),
-                        ip
-                );
+                        ip);
 
                 return ResponseEntity.ok(ImmutableMap.of("token", token));
             }
@@ -84,58 +83,45 @@ public class AuthController {
                                                @RequestHeader("Authorization") String token,
                                                HttpServletRequest request) {
         if (token == null || token.isEmpty()) {
-            return ResponseEntity.badRequest().body("El token de autorización es obligatorio");
+            return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El token de autorización es obligatorio"));
         }
-
+    
         try {
             String jwtToken = token.replace("Bearer ", "");
-            String ip = request.getHeader("X-Forwarded-For");
-            if (ip == null || ip.isEmpty()) {
-                ip = request.getRemoteAddr();
-            }
-
-            // Validar token y comparar la IP
+            String ip = Optional.ofNullable(request.getHeader("X-Forwarded-For")).orElse(request.getRemoteAddr());
+    
             if (!jwtUtil.validarTokenConIP(jwtToken, ip)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("Token inválido o utilizado desde una ubicación no autorizada.");
+                        .body(ImmutableMap.of("error", "Token inválido o utilizado desde una ubicación no autorizada."));
             }
-
+    
             String correo = jwtUtil.getCorreoFromToken(jwtToken);
             Optional<Usuario> user = usuarioService.obtenerUsuarioPorCorreo(correo);
-
+    
             return user.map(usuario -> {
-                // Sanitizar entrada contra XSS
                 String sanitizedNombre = Jsoup.clean(updatedUser.getNombre(), Safelist.basic());
                 String sanitizedApellido = Jsoup.clean(updatedUser.getApellido(), Safelist.basic());
-                String sanitizedCorreo = Jsoup.clean(updatedUser.getCorreo(), Safelist.basic());
                 String sanitizedTelefono = Jsoup.clean(updatedUser.getTelefono(), Safelist.none());
-
+    
                 if (sanitizedNombre == null || sanitizedNombre.isEmpty()) {
-                    return ResponseEntity.badRequest().body("El nombre no puede estar vacío");
+                    return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El nombre no puede estar vacío"));
                 }
                 if (sanitizedApellido == null || sanitizedApellido.isEmpty()) {
-                    return ResponseEntity.badRequest().body("El apellido no puede estar vacío");
+                    return ResponseEntity.badRequest().body(ImmutableMap.of("error", "El apellido no puede estar vacío"));
                 }
-
+    
                 usuario.setNombre(sanitizedNombre);
                 usuario.setApellido(sanitizedApellido);
                 usuario.setTelefono(sanitizedTelefono);
-
-                if (!usuario.getCorreo().equals(sanitizedCorreo)) {
-                    usuario.setCorreo(sanitizedCorreo);
-                }
-
-                if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                    String sanitizedPassword = Jsoup.clean(updatedUser.getPassword(), Safelist.none());
-                    usuarioService.actualizarContrasena(usuario, sanitizedPassword);
-                }
-
+    
                 usuarioService.actualizarUsuario(usuario);
-                return ResponseEntity.ok("Datos del usuario actualizados exitosamente");
-            }).orElse(ResponseEntity.status(404).body("Usuario no encontrado"));
-
+    
+                return ResponseEntity.ok(ImmutableMap.of("mensaje", "Datos del usuario actualizados exitosamente"));
+            }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ImmutableMap.of("error", "Usuario no encontrado")));
+    
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al actualizar los datos del usuario");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ImmutableMap.of("error", "Error al actualizar los datos del usuario"));
         }
     }
+    
 }
